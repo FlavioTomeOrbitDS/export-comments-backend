@@ -1,0 +1,7 @@
+app_old.py
+__pycache__
+build
+dist
+exportcomments.egg-info
+venv
+setup.py
