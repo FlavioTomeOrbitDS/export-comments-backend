@@ -11,15 +11,62 @@ from time import sleep
 app = Flask(__name__)
 CORS(app)
 
+# How Export Comments API Works:
+# First we send an url (instagram, face, youtube post) to API to generate an Download Endpoint
+# Then we send de build the full link and send it to API
+
+
+# Send requests to ExportComments API and get the download file endpoint as response
+@app.route("/api/generateEndpoints", methods=['POST', 'GET'])
+def generateEndpoints():
+
+    from time import sleep
+
+    # gets the link passed by the frontend
+    json_data = request.get_json()
+    link = json_data['url']
+
+    # encodes the endpoint as the specified in API documentation
+    encoded_link = urllib.parse.quote(link, safe='')
+
+    # builds the request to send to exportcomments API
+    url = "https://exportcomments.com/api/v2/export?url={}".format(
+        encoded_link)
+    header = {'X-AUTH-TOKEN': 'b11ee661080db564ced715d0f6a88c9adfdbec4e3e7db118f72e720c20defa3b04674c81554a874f8eeba296a0399b2645b34d473fe80eccc5b0a11d',
+              "accept": "application/json"}
+
+    print("SEND TO API: {}".format(url))
+
+    # the api oly supports a few number of requests each time.
+    # Then, when the API returns 429 code, the script waits 5 seconds an sends the request again
+    full_url = ''
+    while full_url == '':
+        try:
+            response = requests.put(url, headers=header)
+            # format response to get the downloadUrl param
+            json_data = response.json()
+            # print(json_data)
+            print(json_data)
+            # print("REPONSE CODE: {}".format(json_data['code']))
+            downloadUrl = json_data['data']['downloadUrl']
+            full_url = "https://exportcomments.com"+downloadUrl
+        except:
+            full_url = ''
+            sleep(5)
+
+    Exportlink = {
+        'link': full_url
+    }
+
+    return jsonify(Exportlink)
+
 
 @app.route("/api/downloadfiles", methods=['POST', 'GET'])
 def sendEndpoints():
     print("***************** Download File ***********************")
 
-    # get the endponit from frontend
-
+    # receive the endpoint from frontend
     json_data = request.get_json()
-    print(json_data)
     endpoint = json_data['endpoint']
 
     print("Making request to: {}".format(endpoint))
@@ -47,53 +94,6 @@ def sendEndpoints():
         as_attachment=True,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-
-
-@app.route("/api/generateEndpoints", methods=['POST', 'GET'])
-def generateEndpoints():
-
-    from time import sleep
-    
-    json_data = request.get_json()
-
-    link = json_data['url']
-
-    print("SEND: {}".format(link))
-
-    # encode link
-    encoded_link = urllib.parse.quote(link, safe='')
-
-    # build the request to send to exportcomments api
-    url = "https://exportcomments.com/api/v2/export?url={}".format(
-        encoded_link)
-
-    header = {'X-AUTH-TOKEN': 'b11ee661080db564ced715d0f6a88c9adfdbec4e3e7db118f72e720c20defa3b04674c81554a874f8eeba296a0399b2645b34d473fe80eccc5b0a11d',
-              "accept": "application/json"}
-
-    response = requests.put(url, headers=header)
-    
-    # format response to get the downloadUrl param
-    json_data = response.json()
-    # print(json_data)
-    print(json_data)
-    try:
-        #print("REPONSE CODE: {}".format(json_data['code']))
-        downloadUrl = json_data['data']['downloadUrl']
-        url = "https://exportcomments.com"+downloadUrl
-    except:        
-        url = ''
-
-    # build the full download url
-    print("--GET: {}".format(url))
-
-    #exportLink = Exportlink()
-    #exportLink.link = linksArray
-
-    Exportlink = {
-        'link': url
-    }
-
-    return jsonify(Exportlink)
 
 
 if __name__ == '__main__':
