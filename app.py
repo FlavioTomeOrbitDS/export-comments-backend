@@ -1,10 +1,8 @@
 from flask import Flask, send_file, request, jsonify
 from flask_cors import CORS
-from scripts import getExportUrl, getFile
 import requests
 import io
 import urllib.parse
-import json
 from time import sleep
 
 
@@ -148,7 +146,10 @@ def sendEndpoints():
         as_attachment=True,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-
+#****************************************************************************************************#
+@app.route("/severtest", methods=['POST', 'GET'])
+def severtest():
+    return 'Server Online!'
 
 if __name__ == '__main__':
     app.run()
