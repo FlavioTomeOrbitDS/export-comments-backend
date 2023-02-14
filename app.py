@@ -151,5 +151,9 @@ def sendEndpoints():
 def severtest():
     return 'Server Online!'
 
+@app.route("/")
+def hello():
+    return 'hello server'
+
 if __name__ == '__main__':
     app.run()
