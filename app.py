@@ -132,11 +132,20 @@ def sendEndpoints():
     except:
         return jsonify('teste')
 
+    #used to limit the number of requests
+    requests_count = 0
     # if the download failed, try again
     while r.status_code != 200:
-        sleep(0.5)
-        print("Making request to: {}".format(endpoint))
-        r = requests.get(endpoint, headers=header)
+        sleep(1)
+        requests_count += 1
+        #max number of requests
+        if requests_count >= 300:
+            print('chega!!!')
+            #return error code
+            return jsonify('404')
+        else:
+            print("Making request to: {}".format(endpoint))
+            r = requests.get(endpoint, headers=header)
 
     # return a response as xlsx file format
     buffer = io.BytesIO(r.content)
@@ -148,7 +157,7 @@ def sendEndpoints():
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
 #****************************************************************************************************#
-@app.route("/severtest", methods=['POST', 'GET'])
+@app.route("/servertest", methods=['POST', 'GET'])
 def severtest():
     return 'Server Online!'
 
