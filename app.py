@@ -1,4 +1,4 @@
-from flask import Flask, send_file, request, jsonify
+from flask import Flask, send_file, request, jsonify, make_response
 from flask_cors import CORS
 import requests
 import io
@@ -56,6 +56,7 @@ def generateEndpoints():
             sleep(5)
 
     Exportlink = {
+        'original_url': link, 
         'link': full_url
     }
 
@@ -72,10 +73,11 @@ def generateEndpointsFromList():
     json_data = request.get_json()
     list_of_endpoints = json_data['list_of_endpoints']
 
-    full_download_url_list = ['']
+    full_download_url_list = []
 
     for endpoint in list_of_endpoints:
         # encodes the endpoint as the specified in API documentation
+        original_endpoint = endpoint
         endpoint = urllib.parse.quote(endpoint, safe='')
 
         # builds the request to send to exportcomments API
@@ -103,7 +105,7 @@ def generateEndpointsFromList():
                 full_download_url = ''
                 sleep(5)
 
-        full_download_url_list.append(full_download_url)
+        full_download_url_list.append({'full_download_url':full_download_url, 'endpoint': original_endpoint})
         sleep(1.0)
 
     Exportlink = {
@@ -130,7 +132,11 @@ def sendEndpoints():
     try:
         r = requests.get(endpoint, headers=header)
     except:
-        return jsonify('teste')
+        # send an Internar Server Error to frontend
+        response = make_response('URL Error')
+        response.status_code = 500
+        return response
+        
 
     #used to limit the number of requests
     requests_count = 0
@@ -139,10 +145,13 @@ def sendEndpoints():
         sleep(1)
         requests_count += 1
         #max number of requests
-        if requests_count >= 300:
-            print('chega!!!')
-            #return error code
-            return jsonify('404')
+        if requests_count >= 120:
+            print('No data returned by API')            
+            # send an Internar Server Error code to frontend
+            response = make_response('No data returned by API')
+            response.status_code = 500
+            return response
+            #return jsonify('No data returned by API')
         else:
             print("Making request to: {}".format(endpoint))
             r = requests.get(endpoint, headers=header)
@@ -165,6 +174,11 @@ def severtest():
 def hello():
     return 'hello server'
 
+@app.route("/getblob")
+def getblob():
+    response = make_response('blob retunr')
+    response.status_code = 504
+    return response
 if __name__ == '__main__':
     #port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0')
