@@ -27,7 +27,7 @@ O Backend do projeto foi desenvolvido usando a linguagem Python e o framwork Fla
 
 <br>
 
-##Como editar o projeto localmente:
+## Como editar o projeto localmente:
 
 
 ---
