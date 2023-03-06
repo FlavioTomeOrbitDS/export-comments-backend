@@ -165,20 +165,11 @@ def sendEndpoints():
         as_attachment=True,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-#****************************************************************************************************#
-@app.route("/servertest", methods=['POST', 'GET'])
-def severtest():
-    return 'Server Online!'
 
 @app.route("/")
 def hello():
-    return 'hello server'
+    return 'Server Online'
 
-@app.route("/getblob")
-def getblob():
-    response = make_response('blob retunr')
-    response.status_code = 504
-    return response
 if __name__ == '__main__':
     #port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0')
