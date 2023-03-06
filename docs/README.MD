@@ -34,7 +34,7 @@ O Backend do projeto foi desenvolvido usando a linguagem Python e o framwork Fla
 
 
 
-1.   Abra o terminal do VSCode e clone o repositório do projeto do github com o seguinte comando:
+1. Abra o terminal do VSCode e clone o repositório do projeto do github com o seguinte comando: 
   ```
   git clone https://github.com/FlavioTomeOrbitDS/export-comments-backend
   ```
@@ -127,14 +127,15 @@ return send_file(
 ---
 O Orbit Export Comments Backend é executado no Google Cloud Run por meio de um container Docker. Para fazer o deploy no GCP, você deve sergir os seguintes passos:
 1.   Criar um projeto no GCP e ativar as API's necessárias. 
-2.   Ativar a Cloud Run API
-3.   Criar uma imagem de container Docker do projeto
-4.   Faça o git clone do projeto no Google Cloud
+2.   Ativar a Cloud Run API.
+3.   Criar uma imagem de container Docker do projeto.
+4.   Executar o git clone do projeto no Google Cloud.
 5.   Fazer o upload da imagem do containder no Google Container Registry.
-6.   Fazer o Deploy do container e executá-lo por meio do Google Cloud Run
+6.   Fazer o Deploy do container e executá-lo por meio do Google Cloud Run.
 
+<br>
 
-1. ### Criando um novo projeto do Google Cloud Plataform
+### 1.  Criando um novo projeto do Google Cloud Plataform
 Para criar um novo projeto no Google Cloud Platform, siga estes passos:
 * Acesse o Console do Google Cloud Platform (https://console.cloud.google.com/).
 * Clique no botão "Selecionar Projeto" localizado no canto superior direito da página.
@@ -148,14 +149,14 @@ Para ativar a API do Google Cloud Run
 
 <br>
 
-2. ### Ativando a Google Cloud API:  
+### 2. Ativando a Google Cloud API:  
 * No menu de navegação, selecione "APIs e Serviços" e clique em "Biblioteca de APIs".  
 * Na barra de busca, digite "Cloud Run" e selecione a opção "Cloud Run API".  
 * Clique no botão "Ativar".
 
 <br>
 
-3. ### Criando o container Docker do Projeto:  
+### 3. Criando o container Docker do Projeto:  
 No diretório raiz do projeto, crie um novo arquivo chamado "Dockerfile".  
 Abra o Dockerfile no editor e insira o código a seguir:
 ```
@@ -170,30 +171,45 @@ Salve e feche o arquivo.
 
 <br>
 
-4. ### Clonando o projeto no Google Cloud:
+### 4. Clonando o projeto no Google Cloud:
 * Abra o terminal do GCP e execute o comando git clone [URL do repositório] para clonar o repositório do projeto no github para o Google Cloud. Substitua [URL do repositório] pela URL do repositório que deseja clonar.
 * Insira as credenciais de login do Git, se solicitado.
 * Use o comando **CD** para navegar até o diretório raiz do projeto no Google Cloud.
 
 <br>
 
-5. ### Fazendo o upload do containder no Google Container Registry.
+### 5. Fazendo o upload do containder no Google Container Registry.
 O Container Registry é um serviço de armazenamento e gerenciamento de containers da Google Cloud Plataform.
 Para fazer o upload de um container siga os seguintes passos:
 * Certifique-se de que o Docker esteja instalado em sua máquina local.
 * Faça o build da imagem do Docker para o Google Container Registry usando o comando:
 ```
- docker build -t [TAG_NAME] gcr.io/[PROJECT_ID]/[IMAGE_NAME].
+ docker build -t gcr.io/[PROJECT_ID]/[IMAGE_NAME] .
+
+ Exemplo:
+
+ docker build -t gcr.io/export-comments-project/backend .
 ```
-Abra o Console do Google Cloud Platform (https://console.cloud.google.com/run).
+* Realize o Push do container para o Container Registry:
+```
+ docker push gcr.io/[PROJECT_ID]/[IMAGE_NAME]
 
-Clique no botão "Criar Serviço" e selecione o projeto em que deseja implantar o serviço.
+ Exemplo:
 
-Escolha um nome para o serviço e selecione a imagem do Docker que você acabou de fazer o push.
+ docker push gcr.io/export-comments-project/backend 
+```
 
-Escolha as configurações de implantação necessárias, como a região, as opções de escalonamento e as variáveis ​​de ambiente.
 
-Clique no botão "Implantar" para implantar o contêiner Docker no Google Cloud Run.
+### 6. Realizando o Deploy no Google Cloud Run
+* Com a imagem do container já salva no Google Container Registry, basta executar o código a seguir para fazer o deploy do projeto:
+```
+ gcloud run deploy my-service --image my-image --platform managed 
+
+ Exemplo:
+
+ gcloud run deploy export-comments-backend --image gcr.io/export-comments-project/backend --platform managed
+```
+* Após o deploy ter sido realizado com sucesso, basta acessar a URL informada no termial e verificar se aparece a frase "Server Online" no browser.
 
 
 
